@@ -1,4 +1,4 @@
-package cuckoo
+package yuckoo
 
 import (
 	"crypto/rand"

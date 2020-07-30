@@ -1,4 +1,4 @@
-package cuckoo
+package yuckoo
 
 const offset64 = 14695981039346656037
 const prime64 = 1099511628211

@@ -1,4 +1,4 @@
-package cuckoo
+package yuckoo
 
 var (
 	masks   = [256]uint64{} // only require 65 entires, but 256 prevents a bounds check
