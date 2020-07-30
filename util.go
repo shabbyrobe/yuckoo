@@ -7,6 +7,15 @@ func fnv1aU64(v uint64) uint64 {
 	return (offset64 ^ v) * prime64
 }
 
+func fnv1a64(b []byte) uint64 {
+	var hash uint64 = offset64
+	for _, c := range b {
+		hash ^= uint64(c)
+		hash *= prime64
+	}
+	return hash
+}
+
 func getNextPow2(n uint64) int {
 	n--
 	n |= n >> 1

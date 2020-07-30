@@ -17,7 +17,7 @@ func BenchmarkAdd(b *testing.B) {
 
 	b.ResetTimer()
 	for i := uint64(0); i < uint64(b.N); i++ {
-		filter.Add(j)
+		filter.AddUint64(j)
 		j++
 		if j > end {
 			j = 0
@@ -30,13 +30,13 @@ func BenchmarkLookup(b *testing.B) {
 	filter := New(cap)
 
 	for i := uint64(0); i < uint64(10000); i++ {
-		filter.Add(i)
+		filter.AddUint64(i)
 	}
 
 	b.ResetTimer()
 	j := uint64(0)
 	for i := 0; i < b.N; i++ {
-		BenchHasResult, BenchFullResult = filter.Has(j)
+		BenchHasResult, BenchFullResult = filter.HasUint64(j)
 		j++
 		if j > 20000 {
 			j = 0
@@ -56,7 +56,7 @@ func BenchmarkAgainstOtherLib_Insert(b *testing.B) {
 	var hash [32]byte
 	for i := 0; i < b.N; i++ {
 		io.ReadFull(rand.Reader, hash[:])
-		filter.Add(fnv1a64(hash[:]))
+		filter.AddBytes(hash[:])
 	}
 }
 
@@ -67,24 +67,12 @@ func BenchmarkAgainstOtherLib_Lookup(b *testing.B) {
 	var hash [32]byte
 	for i := 0; i < 10000; i++ {
 		io.ReadFull(rand.Reader, hash[:])
-		filter.Add(fnv1a64(hash[:]))
+		filter.AddBytes(hash[:])
 	}
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		io.ReadFull(rand.Reader, hash[:])
-		filter.Has(fnv1a64(hash[:]))
+		filter.HasBytes(hash[:])
 	}
-}
-
-func fnv1a64(b []byte) uint64 {
-	const offset64 = 14695981039346656037
-	const prime64 = 1099511628211
-
-	var hash uint64 = offset64
-	for _, c := range b {
-		hash ^= uint64(c)
-		hash *= prime64
-	}
-	return hash
 }

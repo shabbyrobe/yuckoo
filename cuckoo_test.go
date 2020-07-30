@@ -48,14 +48,14 @@ func TestCuckooAddHas(t *testing.T) {
 			values := make([]uint64, tc.items)
 			for i := uint64(0); i < tc.items; i++ {
 				v := tc.gen(i, tc.items)
-				f.Add(v)
+				f.AddUint64(v)
 				values[i] = v
 			}
 
 			var results = map[uint64]int{}
 			hit, miss, full := 0, 0, 0
 			for _, v := range values {
-				if has, isFull := f.Has(v); has {
+				if has, isFull := f.HasUint64(v); has {
 					results[v] = resultHit
 					hit++
 				} else if isFull {
@@ -102,7 +102,7 @@ func TestCuckooAddHas(t *testing.T) {
 
 			for _, v := range values {
 				r := 0
-				if has, isFull := dec.Has(v); has {
+				if has, isFull := dec.HasUint64(v); has {
 					r = resultHit
 				} else if isFull {
 					r = resultFull

@@ -33,10 +33,20 @@ func New(capacity int) *Filter {
 	}
 }
 
-func (f *Filter) Add(v uint64) bool {
-	var bucket *bucket
+// AddBytes adds a hash of a byte slice to the filter
+func (f *Filter) AddBytes(b []byte) bool {
+	return f.AddHashed(fnv1a64(b))
+}
 
-	h1 := fnv1aU64(v)
+// AddUint64 adds a hash of a uint64 to the filter
+func (f *Filter) AddUint64(v uint64) bool {
+	return f.AddHashed(fnv1aU64(v))
+}
+
+// Add a pre-hashed 64-bit value to the filter. Use this if you already have
+// values that follow a good distribution, otherwise use AddUint64.
+func (f *Filter) AddHashed(h1 uint64) bool {
+	var bucket *bucket
 	fp := fingerprint(h1%255 + 1)
 	idx1 := h1 & masks[f.bucketPow]
 	bucket = &f.buckets[idx1]
@@ -126,8 +136,15 @@ func (f *Filter) Add(v uint64) bool {
 	return false
 }
 
-func (f *Filter) Has(v uint64) (ok bool, full bool) {
-	h1 := fnv1aU64(v)
+func (f *Filter) HasBytes(v []byte) (ok bool, full bool) {
+	return f.HasHashed(fnv1a64(v))
+}
+
+func (f *Filter) HasUint64(v uint64) (ok bool, full bool) {
+	return f.HasHashed(fnv1aU64(v))
+}
+
+func (f *Filter) HasHashed(h1 uint64) (ok bool, full bool) {
 	fp := fingerprint(h1%255 + 1) // '0' fingerprint means 'not set'
 	idx1 := h1 & masks[f.bucketPow]
 	b := f.buckets[idx1]
